@@ -65,75 +65,7 @@ const connectParent = asyncHandler(async (req, res) => {
 });
 
 
-const solveQuestionAndUnlockChildQuestions = async (team, questionId) => {
-    try {
-        const question = await Question.findById(questionId);
-        if (!question) {
-            throw new Error('Question not found');
-        }
-
-        // Mark the question as solved for the team
-        team.solvedQuestions.push(questionId);
-        await team.save();
-
-        // Unlock child questions if any
-        for (const childId of question.connectedquestion) {
-            const childQuestion = await Question.findById(childId);
-            if (childQuestion) {
-                // Check if the child question is already solved by the team
-                const isChildSolved = team.solvedQuestions.some(solvedQuestion => solvedQuestion.toString() === childId.toString());
-                if (!isChildSolved) {
-                    // If the child question is not solved by the team, mark it as unsolved (false)
-                    childQuestion.solved = false;
-                    await childQuestion.save();
-                }
-            }
-        }
-    } catch (error) {
-        throw new Error('Error solving question and unlocking child questions: ' + error.message);
-    }
-};
 
 
-// Controller function to check the answer and solve/unlock questions
-const checkans = asyncHandler(async (req, res) => {
-    try {
-        const { id } = req.params;
-        const {teamId, answer } = req.body;
-        console.log(id, answer, teamId);
-        // Find the team
-        const team = await Team.findOne({ teamId :teamId }).populate('solvedQuestions');
-        if (!team) {
-            return res.status(404).json({ error: 'Team not found' });
-        }
 
-        // Find the question
-        const question = await Question.findById(id);
-        if (!question) {
-            return res.status(404).json({ error: 'Question not found' });
-        }
-
-        if (team.solvedQuestions.some(solvedQuestion => solvedQuestion._id.toString() === id)) {
-            return res.status(400).json({ error: 'Question has already been solved by the team' });
-        }
-
-        if (question.answer === answer) {
-            // Update the team's score
-            team.score += question.score;
-            await team.save();
-
-            // Solve the question and unlock its child questions
-            await solveQuestionAndUnlockChildQuestions(team, question._id);
-
-            // Send response
-            res.status(200).json({ message: 'Correct answer! Score updated.', team });
-        } else {
-            res.status(400).json({ error: 'Incorrect answer. Please try again.' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-
-export { getquestion, getquestionById, createQuestion ,connectParent ,checkans};
+export { getquestion, getquestionById, createQuestion ,connectParent };
