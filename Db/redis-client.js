@@ -14,6 +14,7 @@ client
     process.exit(1);
   });
 
+export default client;
 // client.on("connect", () => {
 //   console.log("Redis Database connected" + "\n");
 // });
@@ -61,5 +62,3 @@ client
 // const close = () => {
 //   client.quit();
 // };
-
-export default client;

@@ -1,17 +1,15 @@
 import express from "express";
 import {
-  getquestion,
   getquestionById,
   createQuestion,
-  connectParent,
 } from "../Controllers/challengeController.js";
 
-const challengeRouter = express.Router();
+import { getQuesById } from "../Middleware/cache.js";
 
-challengeRouter.get("/getques", getquestion);
-challengeRouter.get("/getques/:id", getquestionById);
+const challengeRouter = express.Router();
+challengeRouter.get("/getques/:id", getQuesById, getquestionById);
+
+// make this protected!
 challengeRouter.post("/addques", createQuestion);
-challengeRouter.post("/connect", connectParent);
-// challengeRouter.post('/ques/:id', checkans);
 
 export default challengeRouter;
