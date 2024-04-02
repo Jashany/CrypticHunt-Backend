@@ -12,7 +12,7 @@ const teamMemberSchema = new mongoose.Schema(
       enum: ["admin", "member"],
     },
   },
-  { _id: false },
+  { _id: false }
 );
 
 const TeamSchema = new mongoose.Schema(
@@ -32,6 +32,9 @@ const TeamSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    lastLevelCrackedAt: {
+      type: Date,
+    },
     solvedQuestions: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -39,7 +42,7 @@ const TeamSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const Team = mongoose.model("Team", TeamSchema);
