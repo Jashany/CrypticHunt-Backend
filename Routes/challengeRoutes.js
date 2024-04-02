@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getquestionById,
+  checkans,
   createQuestion,
 } from "../Controllers/challengeController.js";
 
@@ -11,5 +12,6 @@ challengeRouter.get("/getques/:id", getQuesById, getquestionById);
 
 // make this protected!
 challengeRouter.post("/addques", createQuestion);
+challengeRouter.post("/checkans/:id",checkans);
 
 export default challengeRouter;

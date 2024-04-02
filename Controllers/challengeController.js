@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Question from "../Models/question.model.js";
 import client from "../Db/redis-client.js";
+import Team from "../Models/Team.model.js";
 
 const getquestionById = asyncHandler(async (req, res) => {
   try {
@@ -40,6 +41,45 @@ const createQuestion = asyncHandler(async (req, res) => {
   }
 });
 
+const checkans = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {teamID,answer} = req.body;
+    const team = await Team.findById(teamID);
+    const ques = await Question.findById(id);
+    if(team.solvedQuestions.includes(ques._id)){
+      res.status(200).json({
+        status: "failure",
+        message: "Question already solved",
+      });
+      return;
+    }
+    if (ques) {
+      if (ques.answer === answer) {
+        team.solvedQuestions.push(ques._id);
+        team.score += ques.score;
+        await team.save();
+        res.status(200).json({
+          status: "success",
+          message: "Correct answer",
+        });
+      } else {
+        res.status(200).json({
+          status: "failure",
+          message: "Incorrect answer",
+        });
+      }
+    }
+  } catch (error) {
+    res.status(400);
+    throw new Error("Cant check answer",error.message);
+  }
+});
+
+    
+    
+
+
 // const connectParent = asyncHandler(async (req, res) => {
 //   try {
 //     const { parentID, childID } = req.body;
@@ -64,4 +104,4 @@ const createQuestion = asyncHandler(async (req, res) => {
 //   }
 // });
 
-export { getquestionById, createQuestion };
+export { getquestionById, createQuestion ,checkans };
