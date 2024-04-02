@@ -27,7 +27,11 @@ const TeamSchema = new mongoose.Schema({
   score: {
     type: Number,
     default: 0
-  }
+  },
+  solvedQuestions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question'
+  }]
 }, { timestamps: true });
 
 const Team = mongoose.model('Team', TeamSchema);

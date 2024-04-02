@@ -78,7 +78,8 @@ const joinTeam = asyncHandler(async (req, res) => {
 });
 const getTeam = asyncHandler(async (req, res) => {
     try {
-        const {userId} = req.body; // Assuming the user ID is available from authentication middleware
+        const {userId} = req.body; 
+        // Assuming the user ID is available from authentication middleware
         // Find the team where the user is a member
         const team = await Team.findOne({ "members.user": userId }).populate('members.user', 'email name');
 
