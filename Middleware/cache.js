@@ -20,8 +20,14 @@ const getQuesById = async (req, res, next) => {
   }
 };
 
-const getLeaderBoardUsers = async (req, res, next) => {
-  console.log("using zadd");
+const getLeaderBoard = async (req, res, next) => {
+  const leaderboardKey = "leaderboard";
+  const data = await client.zRangeByScoreWithScores(
+    leaderboardKey,
+    "-inf",
+    "+inf"
+  );
+  return res.status(200).json(data);
 };
 
-export { getQuesById };
+export { getQuesById, getLeaderBoard };

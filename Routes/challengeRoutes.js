@@ -12,6 +12,6 @@ challengeRouter.get("/getques/:id", getQuesById, getquestionById);
 
 // make this protected!
 challengeRouter.post("/addques", createQuestion);
-challengeRouter.post("/checkans/:id",checkans);
+challengeRouter.post("/checkans/:id", checkans);
 
 export default challengeRouter;
