@@ -41,78 +41,6 @@ const createQuestion = asyncHandler(async (req, res) => {
   }
 });
 
-// const checkans = asyncHandler(async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { teamID, answer } = req.body;
-//     const team = await Team.findOne({ teamId: teamID });
-//     console.log(id,team,answer)
-//     // cache handler
-//     let ques = await client.get(`question:${id}`);
-//     ques = JSON.parse(ques);
-//     if (!ques) {
-//       const quesID = await Question.findById(id);
-//       await client.set(`question:${id}`, JSON.stringify(quesID));
-//     }
-//     ques = await client.get(`question:${id}`);
-//     ques = JSON.parse(ques);
-
-//     if (team.solvedQuestions.includes(ques._id)) {
-//       return res.status(409).json({
-//         status: "failure",
-//         message: "Question already solved",
-//       });
-//     }
-//     if (ques) {
-//       if (ques.answer === answer) {
-//         const updatedTeam = await Team.findByIdAndUpdate(
-//           teamID,
-//           {
-//             $push: { solvedQuestions: ques._id },
-//             $inc: { score: ques.score },
-//             $set: { lastLevelCrackedAt: Date.now() },
-//           },
-//           { new: true }
-//         );
-
-//         if (!updatedTeam) {
-//           return res.status(404).json({
-//             status: "failure",
-//             message: "Team not found",
-//           });
-//         }
-
-//         // sorted set hack
-//         const currentTime = updatedTeam.lastLevelCrackedAt / 1000;
-//         const mySpecialEpoch = 1715904000;
-//         const delta = mySpecialEpoch - currentTime;
-//         const finalScore = parseFloat(`${updatedTeam.score}.${delta}`);
-//         const leaderboardKey = "leaderboard";
-
-//         client.zAdd(leaderboardKey, [
-//           { score: finalScore, value: updatedTeam.teamName },
-//         ]);
-
-//         res.status(200).json({
-//           status: "success",
-//           message: "Correct answer",
-//         });
-//       } else {
-//         res.status(200).json({
-//           status: "failure",
-//           message: "Incorrect answer",
-//         });
-//       }
-//     }
-//   } catch (error) {
-//     res.status(400).json({
-//       status: "failure",
-//       message: "Can't check answer",
-//     });
-//     throw new Error("Cant check answer", error.message);
-//   }
-// });
-
 
 const checkans = asyncHandler(async (req, res) => {
   try {
@@ -122,12 +50,14 @@ const checkans = asyncHandler(async (req, res) => {
     const team_id = team._id;
     let ques = await client.get(`question:${id}`);
     ques = JSON.parse(ques);
-
+  
     if (!ques) {
       const quesID = await Question.findById(id);
-      await client.set(`question:${id}`, JSON.stringify(quesID));
-      ques = quesID;
+      await client.set(`question:${id}`, JSON.stringify(quesID));      
     }
+    ques = await client.get(`question:${id}`);
+    ques = JSON.parse(ques);
+
     if (team.solvedQuestions.includes(ques._id)) {
       return res.status(409).json({
         status: "failure",
@@ -152,7 +82,7 @@ const checkans = asyncHandler(async (req, res) => {
             message: "Team not found",
           });
         }
-
+        // sorted set hack
         const currentTime = updatedTeam.lastLevelCrackedAt / 1000;
         const mySpecialEpoch = 1715904000;
         const delta = mySpecialEpoch - currentTime;
