@@ -78,6 +78,7 @@ const joinTeam = asyncHandler(async (req, res) => {
     teamId: team.teamId,
     teamName: team.teamName,
     score : team.score,
+    solvedQuestions: team.solvedQuestions,
     members: team.members.map((member) => ({
       email: member.user.email,
       name: member.user.name,
@@ -103,7 +104,6 @@ const getTeam = asyncHandler(async (req, res) => {
     const response = {
       teamId: team.teamId,
       teamName: team.teamName,
-      score : team.score,
       members: team.members.map((member) => ({
         email: member.user.email, // Assuming email is a field in the User model
         name: member.user.name,
