@@ -98,7 +98,6 @@ const checkans = asyncHandler(async (req, res) => {
           message: "Correct answer",
         });
       } else {
-        console.log("Incorrect answer");
         return res.status(200).json({
           status: "failure",
           message: "Incorrect answer",
