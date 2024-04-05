@@ -101,19 +101,23 @@ const getTeam = asyncHandler(async (req, res) => {
     const response = {
       teamId: team.teamId,
       teamName: team.teamName,
+      
       members: team.members.map((member) => ({
         email: member.user.email, // Assuming email is a field in the User model
         name: member.user.name,
         role: member.role,
       })),
+      solvedQuestions: team.solvedQuestions,
       score: team.score, // Assuming you also want to include the team's score
     };
-
+    
     res.status(200).json(response);
   } catch (error) {
     console.error("Error getting team details:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
 
 export { createTeam, joinTeam, getTeam };
