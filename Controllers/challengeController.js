@@ -7,7 +7,6 @@ const getquestionById = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const quesID = await Question.findById(id);
     if (quesID) {
-      await client.set(`question:${id}`, JSON.stringify(quesID));
       const { _id, question, score, solved, link } = quesID;
       const responseData = { _id, score, question, link, solved };
       res.status(200).json(responseData);
