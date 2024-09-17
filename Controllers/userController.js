@@ -31,7 +31,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, password, phone, gradution, college, Branch } = req.body;
+  const {name, password, phone, gradution, college, Branch} = req.body;
   const email = req.body.email.toLowerCase();
   const userExists = await User.findOne({ email });
   if (userExists) {
@@ -46,7 +46,7 @@ const registerUser = asyncHandler(async (req, res) => {
     phone,
     gradution,
     college,
-    Branch,
+    Branch, 
   });
 
   if (user) {
@@ -66,15 +66,7 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route POST /api/users/logout
 // @access Private
 
-const logoutUser = asyncHandler(async (req, res) => {
-  res.cookie("jwt", "", {
-    expires: new Date(0),
-    httpOnly: true,
-  });
-
-  res.status(200).json({ message: "User Logged Out" });
-});
-
+ 
 // @desc  Get user profile
 // @route GET /api/users/profile
 // @access Private
@@ -137,4 +129,25 @@ const resetpassword = asyncHandler(async (req, res) => {
   }
 });
 
-export { authUser, registerUser, logoutUser, forgetpassword, resetpassword };
+const logoutUser = asyncHandler(async (req, res) => {
+  res.cookie("token", "none", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
+
+const testRoute =  asyncHandler(async (req, res) => {
+  res.status(200).json({
+    success: true,
+    message : "Route working fine",
+    data: {},
+  });
+});
+
+export { authUser, registerUser, logoutUser, forgetpassword, resetpassword , testRoute };

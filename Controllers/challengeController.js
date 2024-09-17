@@ -1,6 +1,5 @@
 import asyncHandler from "express-async-handler";
 import Question from "../Models/question.model.js";
-import client from "../Db/redis-client.js";
 import Team from "../Models/Team.model.js";
 
 const getquestionById = asyncHandler(async (req, res) => {

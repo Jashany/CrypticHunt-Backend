@@ -9,7 +9,6 @@ import userRouter from "./Routes/userRoutes.js";
 import { notfound, errorHandler } from "./Middleware/error.js";
 import teamRouter from "./Routes/teamRoutes.js";
 import challengeRouter from "./Routes/challengeRoutes.js";
-import client from "./Db/redis-client.js";
 
 const app = express();
 dotenv.config();
