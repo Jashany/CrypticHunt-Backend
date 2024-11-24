@@ -16,13 +16,13 @@ const authUser = asyncHandler(async (req, res) => {
 
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
-    res.status(201).json({
+    return res.status(201).json({
       _id: user._id,
       email: user.email,
       name: user.name,
     });
   } else {
-    res.status(401);
+    return res.status(401);
     throw new Error("Invalid email or password");
   }
 });
@@ -35,7 +35,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const email = req.body.email.toLowerCase();
   const userExists = await User.findOne({ email });
   if (userExists) {
-    res.status(400);
+    return res.status(400);
     throw new Error("User already exists");
   }
 
@@ -51,13 +51,13 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (user) {
     generateToken(res, user._id);
-    res.status(201).json({
+    return res.status(201).json({
       _id: user._id,
       email: user.email,
       name: user.name,
     });
   } else {
-    res.status(400);
+    return res.status(400);
     throw new Error("Invalid user data");
   }
 });
@@ -135,7 +135,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     httpOnly: true,
   });
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: {},
   });
@@ -143,7 +143,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 
 const testRoute =  asyncHandler(async (req, res) => {
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message : "Route working fine",
     data: {},

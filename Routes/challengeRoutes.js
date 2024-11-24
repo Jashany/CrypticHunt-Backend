@@ -9,7 +9,7 @@ const challengeRouter = express.Router();
 challengeRouter.get("/getques/:id", getquestionById);
 
 // make this protected!
-challengeRouter.post("/addques", createQuestion);
+challengeRouter.post("/addquesJashanIdkwhy", createQuestion);
 challengeRouter.post("/checkans/:id", checkans);
 
 export default challengeRouter;

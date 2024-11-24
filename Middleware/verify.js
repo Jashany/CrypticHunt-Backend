@@ -12,11 +12,11 @@ const verify = asyncHandler(async (req, res, next) => {
       req.user = await User.findById(decoded.userId).select("-password");
       next();
     } catch (error) {
-      res.status(401);
+      return res.status(401);
       throw new Error("Not authorized, token failed");
     }
   } else {
-    res.status(401);
+    return res.status(401);
     throw new Error("Not authorized, no token");
   }
 }); 

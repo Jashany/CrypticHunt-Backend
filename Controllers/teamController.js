@@ -43,7 +43,7 @@ const createTeam = asyncHandler(async (req, res) => {
     })),
   };
 
-  res.status(201).json(response);
+  return res.status(201).json(response);
 });
 
 const joinTeam = asyncHandler(async (req, res) => {
@@ -86,7 +86,7 @@ const joinTeam = asyncHandler(async (req, res) => {
     })),
   };
 
-  res.status(200).json(response);
+  return res.status(200).json(response);
 });
 const getTeam = asyncHandler(async (req, res) => {
   try {
@@ -113,10 +113,10 @@ const getTeam = asyncHandler(async (req, res) => {
       score: team.score, // Assuming you also want to include the team's score
     };
     
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
     console.error("Error getting team details:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 });
 

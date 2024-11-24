@@ -9,16 +9,16 @@ const getquestionById = asyncHandler(async (req, res) => {
     if (quesID) {
       const { _id, question, score, solved, link } = quesID;
       const responseData = { _id, score, question, link, solved };
-      res.status(200).json(responseData);
+      return res.status(200).json(responseData);
     } else {
-      res.status(404).json({
+      return res.status(404).json({
         status: "failure",
         reason: "Question not found!",
       });
       throw new Error("Question not found");
     }
   } catch (error) {
-    res.status(400);
+    return res.status(400);
     throw new Error("Cant get question");
   }
 });
@@ -32,7 +32,7 @@ const createQuestion = asyncHandler(async (req, res) => {
       score,
       link,
     });
-    res.status(201).json(newQuestion);
+    return res.status(201).json(newQuestion);
   } catch (error) {
     res.status(400);
     throw new Error("Cant create question");
@@ -44,18 +44,22 @@ const checkans = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
     const { teamID, answer } = req.body;
+
+    // Find the team using the teamID
     const team = await Team.findOne({ teamId: teamID });
     const team_id = team._id;
-    let ques = await client.get(`question:${id}`);
-    ques = JSON.parse(ques);
-  
-    if (!ques) {
-      const quesID = await Question.findById(id);
-      await client.set(`question:${id}`, JSON.stringify(quesID));      
-    }
-    ques = await client.get(`question:${id}`);
-    ques = JSON.parse(ques);
 
+    // Fetch the question directly from the database
+    let ques = await Question.findById(id);
+
+    if (!ques) {
+      return res.status(404).json({
+        status: "failure",
+        message: "Question not found",
+      });
+    }
+
+    // Check if the question is already solved by the team
     if (team.solvedQuestions.includes(ques._id)) {
       return res.status(409).json({
         status: "failure",
@@ -63,44 +67,34 @@ const checkans = asyncHandler(async (req, res) => {
       });
     }
 
-    if (ques) {
-      if (ques.answer === answer) {
-        const updatedTeam = await Team.findByIdAndUpdate(team_id,
-          {
-            $push: { solvedQuestions: ques._id },
-            $inc: { score: ques.score },
-            $set: { lastLevelCrackedAt: Date.now() },
-          },
-          { new: true }
-        );
+    // Validate the answer
+    if (ques.answer === answer) {
+      const updatedTeam = await Team.findByIdAndUpdate(
+        team_id,
+        {
+          $push: { solvedQuestions: ques._id },
+          $inc: { score: ques.score },
+          $set: { lastLevelCrackedAt: Date.now() },
+        },
+        { new: true }
+      );
 
-        if (!updatedTeam) {
-          return res.status(404).json({
-            status: "failure",
-            message: "Team not found",
-          });
-        }
-        // sorted set hack
-        const currentTime = updatedTeam.lastLevelCrackedAt / 1000;
-        const mySpecialEpoch = 1715904000;
-        const delta = mySpecialEpoch - currentTime;
-        const finalScore = parseFloat(`${updatedTeam.score}.${delta}`);
-        const leaderboardKey = "leaderboard";
-
-        client.zAdd(leaderboardKey, [
-          { score: finalScore, value: updatedTeam.teamName },
-        ]);
-
-        return res.status(200).json({
-          status: "success",
-          message: "Correct answer",
-        });
-      } else {
-        return res.status(200).json({
+      if (!updatedTeam) {
+        return res.status(404).json({
           status: "failure",
-          message: "Incorrect answer",
+          message: "Team not found",
         });
       }
+
+      return res.status(200).json({
+        status: "success",
+        message: "Correct answer",
+      });
+    } else {
+      return res.status(200).json({
+        status: "failure",
+        message: "Incorrect answer",
+      });
     }
   } catch (error) {
     return res.status(400).json({
@@ -109,6 +103,7 @@ const checkans = asyncHandler(async (req, res) => {
     });
   }
 });
+
 
 // const connectParent = asyncHandler(async (req, res) => {
 //   try {
