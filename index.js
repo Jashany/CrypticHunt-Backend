@@ -9,6 +9,7 @@ import userRouter from "./Routes/userRoutes.js";
 import { notfound, errorHandler } from "./Middleware/error.js";
 import teamRouter from "./Routes/teamRoutes.js";
 import challengeRouter from "./Routes/challengeRoutes.js";
+import Team from "./Models/Team.model.js";
 
 const app = express();
 dotenv.config();
@@ -31,6 +32,28 @@ ConnectDB()
 app.use("/api/users", userRouter);
 app.use("/api/team", teamRouter);
 app.use("/api/challenge", challengeRouter);
+app.get("/leaderboard", async (req, res) => {
+  try {
+    // Fetch all teams from the database
+    const teams = await Team.find({});
+
+    // Sort teams by score in descending order
+    teams.sort((a, b) => b.score - a.score);
+
+    // Build leaderboard array
+    const leaderboard = teams.map((team) => ({
+      team: team.teamName,
+      score: Math.floor(team.score),
+    }));
+
+    // Send leaderboard as JSON response
+    res.status(200).json(leaderboard);
+  } catch (error) {
+    // Handle any errors
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+  
 
 app.use(notfound);
 app.use(errorHandler);
